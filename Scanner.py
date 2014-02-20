@@ -63,7 +63,7 @@ def scan_file(image, anchor, chunk_sizes, oob_sizes):
 
     best_oob = guess_oob_offset(image, best_headers, best_osize)
 
-    if best_oob:
+    if best_oob is not None:
         guess_block_size(image, best_csize, best_osize, best_oob)
 
     return best_osize, best_csize
