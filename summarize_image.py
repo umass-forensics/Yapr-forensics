@@ -4,9 +4,11 @@ from YaffsClasses.YaffsChunk import YaffsHeader
 import YaffsParser
 import os
 import datetime
+import sys
 import time
 
 import summarize_deleted_blocks
+
 
 def main():
     parser = YaffsParser.get_argparser()
@@ -51,39 +53,46 @@ def main():
         recent_pairs.extend([(tag, chunk) for tag, chunk in block.chunk_pairs if tag.is_most_recent])
         total_pairs_count += len(block.chunk_pairs)
 
-    print 'Number of Recent chunks: %d' % len(recent_pairs)
+    print 'Number of active chunks: %d' % len(recent_pairs)
     print 'Total number of chunks: %d' % total_pairs_count
-    print 'Fraction recent: %0.2f' % (float(len(recent_pairs)) / total_pairs_count)
+    print 'Fraction active: %0.2f' % (float(len(recent_pairs)) / total_pairs_count)
 
-    last_time = None
-    first_time = None
+    dawn_of_creation = sys.maxint
+    latest_creation = -sys.maxint
+    earliest_modification = sys.maxint
+    latest_modification = -sys.maxint
 
+    earliest_ctime = sys.maxint
+    latest_ctime = -sys.maxint
+
+    #Old blocks are periodically rewritten due to garbage collection
+    #and block refreshing; therefore, the oldest chunk might have a
+    #high sequence number.
     for block in nonerased_blocks:
         for tag, chunk in block.chunk_pairs:
-            if tag.isHeaderTag:
-                print block.sequence_num
-                last_time = time.ctime(YaffsHeader(chunk).mtime)
-                break
+            if not tag.isHeaderTag:
+                continue
 
-        if last_time:
-            break
+            header = YaffsHeader(chunk)
 
+            #atime is different in Yaffs than it is in UNIX
+            dawn_of_creation = min(dawn_of_creation, header.atime)
+            latest_creation = max(latest_creation, header.atime)
 
-    for x in xrange(len(nonerased_blocks)-1, 0, -1):
-        block = nonerased_blocks[x]
-        for y in xrange(len(block.chunk_pairs)-1, 0, -1):
-            tag, chunk = block.chunk_pairs[y]
-            if tag.isHeaderTag:
-                print block.sequence_num
-                first_time = time.ctime(YaffsHeader(chunk).mtime)
-                break
-        if first_time:
-            break
+            earliest_modification = min(earliest_modification, header.mtime)
+            latest_modification = max(latest_modification, header.mtime)
 
+            earliest_ctime = min(earliest_ctime, header.ctime)
+            latest_ctime = max(latest_ctime, header.ctime)
 
-    print 'Oldest object modification: %s' % first_time
-    print 'Newest object modification: %s' % last_time
+    print 'Oldest object creation: %s' % time.ctime(dawn_of_creation)
+    print 'Newest object creation: %s' % time.ctime(latest_creation)
 
+    print 'Oldest object modification: %s' % time.ctime(earliest_modification)
+    print 'Newest object modification: %s' % time.ctime(latest_modification)
+
+    print 'Oldest object ctime: %s' % time.ctime(earliest_ctime)
+    print 'Newest object ctime: %s' % time.ctime(latest_ctime)
 
 
 if __name__ == '__main__':
