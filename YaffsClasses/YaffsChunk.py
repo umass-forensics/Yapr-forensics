@@ -49,11 +49,18 @@ class YaffsHeader(YaffsChunk):
         #ctime is the last time its inode has been modified. This includes
         #when the object, or its metadata was changed
 
+        #I've noticed situations where the oob claims the chunk
+        #is a header, but all of the bytes are 0xFF.
+        if chunk_bytes == '\xff' * len(chunk_bytes):
+            self.is_erased = True
+        else:
+            self.is_erased = False
+
 
         #let's remove those extra null bytes that we read in.
         self.name = self.name.strip('\x00')
 
-    def is_valid(self):
+    def is_valid_file(self):
         """
         This method uses heuristics to check if we think this chunk is a valid Yaffs
         header chunk.

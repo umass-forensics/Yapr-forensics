@@ -282,7 +282,7 @@ def extract_objects(blocks):
             if tag.isHeaderTag:
                 chunk = YaffsChunk.YaffsHeader(chunk)
 
-                if chunk.name == 'deleted':
+                if chunk.is_erased or chunk.name == 'deleted':
                     tag.isDeleted = True
 
             #Pairs should be added in the reverse order of how they

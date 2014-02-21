@@ -160,7 +160,7 @@ def get_headers(image, chunk_size, oob_size):
 
     #Now use the second, slower filter.
     header_chunks = [c for c in header_chunks
-                     if YaffsHeader(c).is_valid()]
+                     if YaffsHeader(c).is_valid_file()]
 
     return header_chunks
 

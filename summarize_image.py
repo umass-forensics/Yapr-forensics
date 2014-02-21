@@ -75,6 +75,9 @@ def main():
 
             header = YaffsHeader(chunk)
 
+            if header.is_erased:
+                continue
+
             #atime is different in Yaffs than it is in UNIX
             dawn_of_creation = min(dawn_of_creation, header.atime)
             latest_creation = max(latest_creation, header.atime)
