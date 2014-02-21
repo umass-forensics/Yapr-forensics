@@ -22,6 +22,7 @@ class YaffsObject:
         We need to do this because object ids are
         reassigned after the old object has been deleted.
         """
+        #TODO: I need to take another look at this method.
         splitObjects = []
         
         isFirstIteration = True
@@ -68,6 +69,8 @@ class YaffsObject:
         #This method will split the object by the version.
         #TODO: It wont handle shrink headers yet.
         #TODO: Doesn't handle issues that arise from missing chunks
+        #TODO: The version split should be based on the object's mtime
+
 
         #In the event of an unclean shutdown while the object was open,
         # the first chunk pair (i.e. the last written),
@@ -91,12 +94,12 @@ class YaffsObject:
                     if not(tag.chunk_id in version) and tag.chunk_id <= num_chunks:
                         version[tag.chunk_id] = (tag, chunk)
 
-        if len(self.versions) > 0:
+        #if len(self.versions) > 0:
             #All chunks in the most recent version of the object
             #are known to be good because Yaffs won't erase a chunk
             #if it is currently in use.
-            for id in self.versions[0]:
-                self.versions[0][id][0].is_most_recent = True
+        #    for id in self.versions[0]:
+        #        self.versions[0][id][0].is_most_recent = True
 
         if False and len(self.versions) > 1:
             print 'Object %d has %d versions' % (self.object_id, len(self.versions))
@@ -112,6 +115,9 @@ class YaffsObject:
         """
 
         for tag, chunk in self.chunk_pairs:
+            #It might be useful for tracking which pairs belong to which objects
+            tag.object_cls = self
+
             if tag.isHeaderTag:
                 if 0 not in self.chunkDict:
                     self.chunkDict[0] = []
@@ -131,12 +137,18 @@ class YaffsObject:
             tag, chunk = self.chunkDict[0][0]
             self.is_deleted = tag.isDeleted
 
+            num_chunks = math.ceil(float(tag.num_bytes) / chunk.length)
+
+            for chunk_id in range(int(num_chunks) + 1):
+                if chunk_id in self.chunkDict:
+                    self.chunkDict[chunk_id][0][0].is_most_recent = True
+
     def writeVersion(self, versionNum=0, name=None):
         header, hChunk = self.versions[versionNum][0]
         hChunk = YaffsChunk.YaffsHeader(hChunk)
         
         numChunks = math.ceil(float(hChunk.fsize) / hChunk.length)
-        
+
         remaining = hChunk.fsize
 
         if name is None:

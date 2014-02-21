@@ -49,6 +49,7 @@ def main():
 
     recent_pairs = []
     total_pairs_count = 0
+
     for block in sorted_blocks:
         recent_pairs.extend([(tag, chunk) for tag, chunk in block.chunk_pairs if tag.is_most_recent])
         total_pairs_count += len(block.chunk_pairs)
@@ -57,10 +58,11 @@ def main():
     print 'Total number of chunks: %d' % total_pairs_count
     print 'Fraction active: %0.2f' % (float(len(recent_pairs)) / total_pairs_count)
 
-    dawn_of_creation = sys.maxint
-    latest_creation = -sys.maxint
-    earliest_modification = sys.maxint
-    latest_modification = -sys.maxint
+    earliest_atime = sys.maxint
+    latest_atime = -sys.maxint
+
+    earliest_mtime = sys.maxint
+    latest_mtime = -sys.maxint
 
     earliest_ctime = sys.maxint
     latest_ctime = -sys.maxint
@@ -79,20 +81,20 @@ def main():
                 continue
 
             #atime is different in Yaffs than it is in UNIX
-            dawn_of_creation = min(dawn_of_creation, header.atime)
-            latest_creation = max(latest_creation, header.atime)
+            earliest_atime = min(earliest_atime, header.atime)
+            latest_atime = max(latest_atime, header.atime)
 
-            earliest_modification = min(earliest_modification, header.mtime)
-            latest_modification = max(latest_modification, header.mtime)
+            earliest_mtime = min(earliest_mtime, header.mtime)
+            latest_mtime = max(latest_mtime, header.mtime)
 
             earliest_ctime = min(earliest_ctime, header.ctime)
             latest_ctime = max(latest_ctime, header.ctime)
 
-    print 'Oldest object creation: %s' % time.ctime(dawn_of_creation)
-    print 'Newest object creation: %s' % time.ctime(latest_creation)
+    print 'Oldest object atime: %s' % time.ctime(earliest_atime)
+    print 'Newest object atime: %s' % time.ctime(latest_atime)
 
-    print 'Oldest object modification: %s' % time.ctime(earliest_modification)
-    print 'Newest object modification: %s' % time.ctime(latest_modification)
+    print 'Oldest object mtime: %s' % time.ctime(earliest_mtime)
+    print 'Newest object mtime: %s' % time.ctime(latest_mtime)
 
     print 'Oldest object ctime: %s' % time.ctime(earliest_ctime)
     print 'Newest object ctime: %s' % time.ctime(latest_ctime)

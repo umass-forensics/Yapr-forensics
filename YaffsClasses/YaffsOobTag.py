@@ -48,6 +48,8 @@ class YaffsOobTag:
         #version of the Yaffs object.
         self.is_most_recent = False
 
+        self.object_cls = None
+
 
     def __str__(self):
         return 'Block Seq: %d, Object Id: %d, Chunk Id: %d, Num. Bytes: %d' \
