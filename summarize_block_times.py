@@ -6,6 +6,7 @@ ctime should give us an idea of when each block was written. This script will te
 ctime values make sense based on the block sequence number ordering
 """
 
+import os
 import sys
 import time
 
@@ -102,19 +103,23 @@ def main():
 
         block_times_list_augmented.append((first, last))
 
+    root, ext = os.path.splitext(args.imagefile)
+    outfile = "%s_times.tsv" % root
+    print 'Outfile: %s' % outfile
 
-    for block, (time_min, time_max) in zip(blocks, block_times_list_augmented):
-        if time_min is None:
-            time_min_str = '???'
-        else:
-            time_min_str = time.ctime(time_min)
+    with open(outfile, 'w') as out:
+        for block, (time_min, time_max) in zip(blocks, block_times_list_augmented):
+            if time_min is None:
+                time_min_str = '???'
+            else:
+                time_min_str = time.ctime(time_min)
 
-        if time_max is None:
-            time_max_str = '???'
-        else:
-            time_max_str = time.ctime(time_max)
+            if time_max is None:
+                time_max_str = '???'
+            else:
+                time_max_str = time.ctime(time_max)
 
-        print '%d\t%s\t%s' % (block.sequence_num, time_min_str, time_max_str)
+            out.write('%d\t%s\t%s\n' % (block.sequence_num, time_min_str, time_max_str))
 
 
 
