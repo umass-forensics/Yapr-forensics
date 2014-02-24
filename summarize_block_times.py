@@ -28,74 +28,88 @@ def main():
 
     objects = YaffsParser.extract_objects(sorted_blocks)
 
+    #Let's grab all of the object headers for newly
+    #created objects.
+    for obj in objects:
+        #make sure the object has at least one header
+        if 0 not in obj.chunkDict:
+            continue
+        #Grab the oldests header for the object
+        tag, header = obj.chunkDict[0][-1]
+
+        #We only want to consider file objects
+        #also, we want the first header and we know
+        #that the number of bytes when the file is
+        #created should be 0
+        #and that we don't have a time for the block already
+        if header.obj_type != 1 \
+                or header.is_erased \
+                or header.name == 'deleted' \
+                or header.name == 'unlinked' \
+                or tag.num_bytes > 0:
+            continue
+
+        #We'll use mtime. For some phones, the atime
+        #takes strange values.
+        tag.block_cls.create_times.append(header.mtime)
+
+
     nonerased_blocks = [b for b in sorted_blocks if not b.is_erased]
     blocks = sorted(nonerased_blocks, key=lambda bl: bl.sequence_num)
 
-    block_times_oldest = [(-sys.maxint)]
+    block_times_list = []
 
     #Each block must have been written before the next block in the sequence
     for block in blocks:
-        time_block = -sys.maxint
+        #Check if we've already figured out some times
+        if len(block.create_times) > 0:
+            first = min(block.create_times)
+            last = max(block.create_times)
+            block_times_list.append((int(first), int(last)))
+        else:
+            block_times_list.append((None, None))
 
-        for tag, chunk in block.chunk_pairs:
-            if not tag.isHeaderTag:
+    #We have to use a new list because so
+    #we don't modify the current list. Important
+    #when trying to guess the range based on other blocks
+    block_times_list_augmented = []
+
+    #if we don't already have a time range for the block,
+    #We want to guess the range based on the other blocks
+    for x in xrange(len(block_times_list)):
+        first, last = block_times_list[x]
+
+        if first is None:
+            ran = range(x)
+
+            if ran is None:
                 continue
 
-            header = YaffsHeader(chunk)
+            ran.reverse()
 
-            if header.is_erased:
-                continue
+            for y in ran:
+                prev_first, prev_last = block_times_list[y]
+                if prev_first is not None or prev_last is not None:
+                    first = int(max(prev_first, prev_last))
+                    break
+        if last is None:
+            ran = range(x+1, len(block_times_list))
+            for z in ran:
+                next_first, next_last = block_times_list[z]
+                if next_first is not None or next_last is not None:
+                    last = int(min(next_first, next_last))
+                    break
 
-            #block time is at least as old as the previous block
-            #as well as the most recent time for any of its header
-            #chunks
-            time_block = max(header.ctime, header.atime, header.mtime, time_block)
-            print block.sequence_num, \
-                time.ctime(header.atime), \
-                time.ctime(header.mtime),\
-                time.ctime(header.ctime)
-
-        block_times_oldest.append(int(max(time_block, block_times_oldest[-1])))
-
-    #Remove the first item in the list, which we added as -sys.maxint
-    block_times_oldest.pop(0)
-
-    #After a chunk expires it isn't moved (I hope). We know a chunk has expired
-    #when it is replaced by the most recent chunk for the same object
-    #with the same chunk id causing an object header with the modified time
-    #A chunk must have been written to the block before it expired. So the chunk's
-    #expiration time is an upper bound on when the block was written.
-    for block in blocks:
-        block.mtime = sys.maxint
-
-        for tag, chunk in block.chunk_pairs:
-            obj = tag.object_cls
-
-            if 0 not in obj.chunkDict or tag.is_most_recent:
-                continue
-
-            #At worst, the chunk expired by this time.
-            if tag.chunk_id > 0:
-                mtime = obj.chunkDict[0][0][1].mtime
-                tmp = time.ctime(mtime)
-                pass
-            else:
-                mtime = sys.maxint
-            #    mtime = obj.chunkDict[0][0][1].ctime
-
-            block.mtime = min(block.mtime, mtime)
-
-    block_times_newest = [b.mtime for b in blocks]
+        block_times_list_augmented.append((first, last))
 
 
-
-    for block, time_min, time_max in zip(blocks, block_times_oldest, block_times_newest):
-        if time_min <= 0:
+    for block, (time_min, time_max) in zip(blocks, block_times_list_augmented):
+        if time_min is None:
             time_min_str = '???'
         else:
             time_min_str = time.ctime(time_min)
 
-        if time_max == sys.maxint:
+        if time_max is None:
             time_max_str = '???'
         else:
             time_max_str = time.ctime(time_max)

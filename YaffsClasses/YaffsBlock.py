@@ -16,6 +16,9 @@ class YaffsBlock:
         
         self.is_erased = False
 
+        #A list of mtimes for newly created objects.
+        self.create_times = []
+
     def __str__(self):
         return 'Sequence Num: %d, Chunk Pairs: %d, Is Erased: %s' \
                % (self.sequence_num, len(self.chunk_pairs), self.is_erased)

@@ -258,8 +258,6 @@ def extract_objects(blocks):
 
     objects = {}
 
-    print 'Extracting objects...'
-
     #scan through the list of blocks. Should be sorted in reverse sequence order.
     for block in sorted_blocks:
         #skip erased blocks
