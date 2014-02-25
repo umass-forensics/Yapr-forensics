@@ -16,10 +16,10 @@ def main():
 
     #read in and order all of the blocks
     sorted_blocks = YaffsParser.extract_ordered_blocks(args.imagefile,
-                                                       args.pagesize,
+                                                       args.chunksize,
                                                        args.oobsize,
                                                        args.blocksize,
-                                                       tag_offset=args.tag_offset)
+                                                       args.tag_offset)
 
     missing_set = get_missing_block_numbers(sorted_blocks)
 
