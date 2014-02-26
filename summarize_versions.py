@@ -1,3 +1,15 @@
+"""
+This script prints out the time and chunk information for all versions of each
+file object in the image. Specifically, the output for each object is:
+ - object's id,
+ - name,
+ - number of seconds between the modification time of the most
+   recent version and the current header,
+ - expected number of chunks,
+ - actual number of chunks,
+
+"""
+
 __author__ = 'wallsr'
 
 import YaffsParser
@@ -24,7 +36,7 @@ def main():
 
     for obj in current_objects:
         #check the object type from the first header chunk.
-        if len(obj.versions) > 0 and obj.versions[0][0][1].obj_type == 1:
+        if not obj.hasNoHeader and obj.versions[0][0][1].obj_type == 1:
             current_file_objects.append(obj)
 
     print "object_id,name,time_diff,expected,actual"
@@ -45,9 +57,6 @@ def get_missing_chunks_by_version(obj):
     """
     missing = []
     most_recent_time = None
-
-    if obj.object_id == 624:
-        pass
 
     for version in obj.versions:
         header_oob, header_chunk = version[0]
@@ -70,7 +79,7 @@ def get_missing_chunks_by_version(obj):
             return []
 
         if num_chunks_actual > num_chunks_expected:
-            sys.stderr.write('More chunks than expected?! Probably a bug in our code. Object: %d, %s'
+            sys.stderr.write('More chunks than expected?! Probably a bug in our code. Object: %d, %s\n'
                        % (obj.object_id, header_chunk.name))
 
         missing.append((num_chunks_expected, num_chunks_actual, time_diff, header_chunk.name))

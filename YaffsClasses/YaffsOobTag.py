@@ -24,10 +24,14 @@ class YaffsOobTag:
         
         #check if the top byte is 0x80 or 0xC0 which denotes a header chunk
         topByte = self.chunk_id >> 24
-        
-        #self.isBadBlock = (self.block_status != '\xff')
-        
-        self.isHeaderTag = (topByte == 0x80 or topByte == 0xC0)
+
+        #self.isHeaderTag = (topByte == 0x80 or topByte == 0xC0)
+
+        #Typically the most significant byte is 0x80 for a header, 0xC0
+        #for a shrink header, and 0x00 for a data chunk. However, I've observed
+        #the value of 0xA0 as well -- I am not sure what this value denotes.
+        self.isHeaderTag = topByte != 0x00
+
         self.is_shrink_header = (topByte == 0xC0)
         
         #The top byte in objectId field is overloaded in the header tag
