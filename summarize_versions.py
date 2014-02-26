@@ -58,17 +58,21 @@ def get_missing_chunks_by_version(obj):
     missing = []
     most_recent_time = None
 
+    if obj.object_id == 258:
+        pass
+
     for version in obj.versions:
         header_oob, header_chunk = version[0]
 
+        #TODO: I am not sure what timestamp to use
         if most_recent_time is None:
-            most_recent_time = header_chunk.mtime
+            most_recent_time = header_chunk.ctime
 
         filesize = header_oob.num_bytes
         num_chunks_expected = int(math.ceil(filesize * 1.0 / header_chunk.length))
         num_chunks_actual = len(version) - 1
 
-        time_diff = most_recent_time - header_chunk.mtime
+        time_diff = most_recent_time - header_chunk.ctime
 
         # I am not entirely sure why this happens, but I have seen
         # instance of objects were the modification time is before the creation
