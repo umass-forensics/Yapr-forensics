@@ -4,6 +4,8 @@ import hashlib
 import os
 import sys
 
+BLOCK_SIZE = 256
+
 # The last image is the one to be filtered,the rest are
 #simply to be added to the hash library
 images = sys.argv[1:]
@@ -17,12 +19,12 @@ for image in images:
     with open(image, 'rb') as f:
         while f.read(1) != '':
             f.seek(-1, True)
-            block = f.read(1024)
+            block = f.read(BLOCK_SIZE)
             hasher = hashlib.sha1()
             hasher.update(block)
             hash_library.add(hasher.digest())
 
-num_blocks = os.path.getsize(filter_image) / 1024
+num_blocks = os.path.getsize(filter_image) / BLOCK_SIZE
 print 'Number of blocks: %d' % num_blocks
 
 #The set of hashes on the filter phone
@@ -31,7 +33,7 @@ hash_set = set()
 with open(filter_image, 'rb') as f:
     while f.read(1) != '':
         f.seek(-1, True)
-        block = f.read(1024)
+        block = f.read(BLOCK_SIZE)
         hasher = hashlib.sha1()
         hasher.update(block)
         hash = hasher.digest()
