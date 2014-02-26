@@ -178,7 +178,7 @@ def testExtractSpecificFile(objects):
         #if object.versions[0][0][1].name == 'contacts2.db':
             print 'found object'
 
-            object.splitByVersion()
+            object.split_by_version()
             print 'Object has %d version(s)' % len(object.versions)
 
             object.writeVersion()
@@ -209,7 +209,7 @@ def testWriteVersion(objects) :
 
 def testVersionSplit(objects):
     for object in objects:
-            object.splitByVersion()
+            object.split_by_version()
 
 
 def printObjectInfo(objects) :
@@ -295,10 +295,10 @@ def extract_objects(blocks):
 
     for obj in split_objects:
         obj.reconstruct()
-        obj.splitByVersion()
+        obj.split_by_version()
 
     for obj in split_objects:
-        if len(obj.versions) == 0:
+        if len(obj.versions) == 0 or obj.hasNoHeader:
             continue
 
         oob, chunk = obj.versions[0][0]

@@ -65,48 +65,52 @@ class YaffsObject:
                     return False
         return True
         
-    def splitByVersion(self):
-        #This method will split the object by the version.
+    def split_by_version(self):
+        """
+        This method will group the chunk pairs based on object headers.
+        Each grouping is called a 'version', and should contain chunks that were
+        written after the version's header such that the version doesn't already have
+        a chunk with that id and that id does not fall beyond the boundary set by the
+        num_bytes field.
+        """
         #TODO: It wont handle shrink headers yet.
         #TODO: Doesn't handle issues that arise from missing chunks
-        #TODO: The version split should be based on the object's mtime
-
 
         #In the event of an unclean shutdown while the object was open,
-        # the first chunk pair (i.e. the last written),
+        #the first chunk pair (i.e. the last written),
         #won't be a header chunk as expected. If this happens, the current logic
-        #will not assign the chunks to a version.
-
-        self.versions = []
+        #always starts with an empty version and assigns a header to it later.
+        #This could also happen due to
+        #garbage collection
+        self.versions = [{}]
         
         for tag, chunk in self.chunk_pairs:
             if tag.isHeaderTag:
-                chunks = {0: (tag, chunk)}
-                self.versions.append(chunks)
+                #check if the first version is missing its header
+                if len(self.versions) == 1 and 0 not in self.versions[0]:
+                    self.versions[0][0] = (tag, chunk)
+                #create a new version for this header
+                else:
+                    chunks = {0: (tag, chunk)}
+                    self.versions.append(chunks)
                 
-            #if this is not a header, add it to every known version that doesn't have a chunk with this id
+            #if this is not a header, add it to every known version that
+            # doesn't have a chunk with this id
             #unless this chunk is beyond the end of the file
             else:
                 for version in self.versions:
-                    #The oob tag contains the file size, we shouldn't include any chunks beyond that file size.
+                    #If the version doesn't have a header,
+                    #go ahead and add the chunk
+                    if 0 not in version:
+                        version[tag.chunk_id] = (tag, chunk)
+                        continue
+
+                    #The oob tag contains the file size, we shouldn't include
+                    # any chunks beyond that file size.
                     filesize = version[0][0].num_bytes
                     num_chunks = int(math.ceil(filesize * 1.0 / chunk.length))
                     if not(tag.chunk_id in version) and tag.chunk_id <= num_chunks:
                         version[tag.chunk_id] = (tag, chunk)
-
-        #if len(self.versions) > 0:
-            #All chunks in the most recent version of the object
-            #are known to be good because Yaffs won't erase a chunk
-            #if it is currently in use.
-        #    for id in self.versions[0]:
-        #        self.versions[0][id][0].is_most_recent = True
-
-        if False and len(self.versions) > 1:
-            print 'Object %d has %d versions' % (self.object_id, len(self.versions))
-            print 'They have the following chunk counts per version'
-        
-            for version in self.versions:
-                print len(version), version[0][1].name
 
     def reconstruct(self):
         """
