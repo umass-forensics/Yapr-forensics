@@ -52,6 +52,9 @@ class YaffsOobTag:
         #version of the Yaffs object.
         self.is_most_recent = False
 
+
+        #This field is set by the Yaffs object upon
+        #object reconstruction
         self.object_cls = None
 
 
