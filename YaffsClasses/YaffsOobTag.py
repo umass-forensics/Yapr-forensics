@@ -21,7 +21,11 @@ class YaffsOobTag:
          self.chunk_id,
          self.num_bytes) = struct.unpack("<IIII",
                                          oobBytes[tag_offset:tag_offset+16])
-        
+
+        #erased or empty block
+        #Most phones erase with all FFs, some phones, like Huawei U8510, use 00s
+        self.is_erased = (self.block_seq == 0xffffffff) or (self.block_seq == 0x00 and self.chunk_id == 0x00)
+
         #check if the top byte is 0x80 or 0xC0 which denotes a header chunk
         topByte = self.chunk_id >> 24
 
@@ -40,8 +44,7 @@ class YaffsOobTag:
             self.object_id &= 0x00ffffff
             self.chunk_id = 0
         
-        #erased or empty block
-        self.is_erased = (self.block_seq == 0xffffffff)
+
         
         #non-empty block, but the object has been deleted
         self.isDeleted = (self.chunk_id == 0xc0000004)
@@ -52,6 +55,9 @@ class YaffsOobTag:
         #version of the Yaffs object.
         self.is_most_recent = False
 
+
+        #This field is set by the Yaffs object upon
+        #object reconstruction
         self.object_cls = None
 
 

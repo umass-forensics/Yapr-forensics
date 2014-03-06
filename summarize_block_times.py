@@ -111,15 +111,22 @@ def main():
         for block, (time_min, time_max) in zip(blocks, block_times_list_augmented):
             if time_min is None:
                 time_min_str = '???'
+                time_min = -1
             else:
                 time_min_str = time.ctime(time_min)
 
             if time_max is None:
                 time_max_str = '???'
+                time_max = -1
             else:
                 time_max_str = time.ctime(time_max)
 
-            out.write('%d\t%s\t%s\n' % (block.sequence_num, time_min_str, time_max_str))
+            out.write('%08x\t%06d\t%s\t%d\t%s\t%d\n' % (block.chunk_pairs[0][1].offset,
+                                                      block.sequence_num,
+                                                      time_min_str,
+                                                      time_min,
+                                                      time_max_str,
+                                                      time_max))
 
 
 

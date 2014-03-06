@@ -41,9 +41,8 @@ class YaffsObject:
                 obj = YaffsObject(self.object_id)
                 splitObjects.append(obj)
                 isFirstIteration = False
-            
-            obj.chunk_pairs.append((tag, chunk))
 
+            obj.chunk_pairs.append((tag, chunk))
 
         if len(splitObjects) > 1 or len(splitObjects) == 0:
             pass
