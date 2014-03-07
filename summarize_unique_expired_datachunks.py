@@ -49,12 +49,31 @@ def main():
 
     unique_expired = [(tag, chk) for tag, chk in unique_pairs if tag.is_most_recent]
 
+    Write_Chunks_to_file(args.imagefile, unique_expired)
+
     print 'The total number of unique expired data chunks: %d' % len(unique_expired)
 
     frac_unique = float(len(unique_expired) * args.chunksize) / os.path.getsize(args.imagefile)
 
     print 'Fraction of unique-expired-data bytes in image: %0.2f' % frac_unique
 
+def Write_Chunks_to_file(file_name, chunk_pairs):
+    """
+    This function writes the unique instances of
+    expired chunks, on which we plan to run Dec0de
+    """
+    file_name_parts = file_name.split(".")
+    new_file_name = ""
+    for i in range(0, len(file_name_parts) - 1):
+        new_file_name += file_name_parts[i]
+    new_file_name += "_unique_expired_chunks." + file_name_parts[-1]
+
+    f = open(new_file_name, 'w')
+    for pair in chunk_pairs:
+        tag, chunk = pair
+        chunk_bytes = chunk.get_bytes()
+        f.write(chunk_bytes)
+    f.close()
 
 if __name__ == '__main__':
     main()
