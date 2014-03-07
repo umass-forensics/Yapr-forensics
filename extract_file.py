@@ -33,7 +33,7 @@ def extract_file(objects, filename, destination_path, versions):
 
         # Deleted objects might have the name 'deleted'
         # so we need to check past versions
-        name_set = set([x[0][1].name for x in object.versions])
+        name_set = set([x[0][1].name for x in object.versions if 0 in x])
 
         if filename in name_set:
             print 'Object %d has %d versions.' % (object.object_id, len(object.versions))

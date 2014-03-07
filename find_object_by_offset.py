@@ -16,7 +16,7 @@ def main():
 
     args = parser.parse_args()
 
-    print 'offset block_seq object_id chunk_id is_header'
+    print 'input_offset chunk_offset block_seq object_id chunk_id is_header'
 
     with open(args.imagefile, 'rb') as f:
         for offset in args.offsets:
@@ -27,7 +27,12 @@ def main():
 
             oob = YaffsOobTag(oob_bytes, tag_offset=args.tag_offset)
 
-            print offset, oob.block_seq, oob.object_id, oob.chunk_id, oob.isHeaderTag
+            print offset, \
+                chunk_start_offset, \
+                oob.block_seq, \
+                oob.object_id, \
+                oob.chunk_id, \
+                oob.isHeaderTag
 
 
 

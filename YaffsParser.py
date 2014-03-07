@@ -282,6 +282,10 @@ def extract_objects(blocks):
 
                 if chunk.is_erased or chunk.name == 'deleted':
                     tag.isDeleted = True
+            elif tag.chunk_id == 0:
+                print 'Oob is not a header but it has a chunk id of zero.'
+
+
 
             #Pairs should be added in the reverse order of how they
             #were written, i.e., the most recent first.

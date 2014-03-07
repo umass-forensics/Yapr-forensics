@@ -34,7 +34,8 @@ class YaffsOobTag:
         #Typically the most significant byte is 0x80 for a header, 0xC0
         #for a shrink header, and 0x00 for a data chunk. However, I've observed
         #the value of 0xA0 as well -- I am not sure what this value denotes.
-        self.isHeaderTag = topByte != 0x00
+        #We've also observed softlink headers that use a chunk_id of 0
+        self.isHeaderTag = topByte != 0x00 or self.chunk_id == 0x00
 
         self.is_shrink_header = (topByte == 0xC0)
         
@@ -43,8 +44,6 @@ class YaffsOobTag:
         if self.isHeaderTag:
             self.object_id &= 0x00ffffff
             self.chunk_id = 0
-        
-
         
         #non-empty block, but the object has been deleted
         self.isDeleted = (self.chunk_id == 0xc0000004)
