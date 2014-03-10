@@ -9,14 +9,31 @@ import time
 
 import summarize_deleted_blocks
 
-
 def main():
     parser = YaffsParser.get_argparser()
+    parser.add_argument("-logfile",
+                        help="The output log file. Will write to image directory if no path is given.",
+                        default=None,
+                        dest="logfile")
+
     args = parser.parse_args()
+
+    #Check if the user specified a log file
+    if args.logfile is not None:
+        #Check if the logfile does not include a path
+        if os.path.dirname(args.logfile) == '':
+            #make the path the same as the image file
+            root, ext = os.path.splitext(args.imagefile)
+            args.logfile = "%s_%s.txt" % (root, args.logfile)
+
+        sys.stderr.write('Log file: %s' % args.logfile)
+
+        sys.stdout = open(args.logfile, 'w')
 
     print args.imagefile, args.chunksize, args.oobsize, args.blocksize, args.tag_offset
     print "Script started: ", datetime.datetime.now()
     print 'File size: ', os.path.getsize(args.imagefile)
+
 
     #read in and order all of the blocks, by reverse order of sequence number
     sorted_blocks = YaffsParser.extract_ordered_blocks(args.imagefile,
@@ -98,6 +115,9 @@ def main():
 
     print 'Oldest object ctime: %s' % time.ctime(earliest_ctime)
     print 'Newest object ctime: %s' % time.ctime(latest_ctime)
+
+    if args.logfile is not None:
+        sys.stdout.close()
 
 
 if __name__ == '__main__':
