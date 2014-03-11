@@ -10,6 +10,9 @@ class YaffsObject:
         self.versions = []
         self.is_deleted = False
         self.hasNoHeader = False
+        self.name = None
+
+        self.object_type = None
         
         #[(tag_cls,chunk_cls)...] tuple lists keyed by chunkId
         #This allows use to have an ordered list of chunks, by id, such
@@ -139,12 +142,24 @@ class YaffsObject:
         else:
             tag, chunk = self.chunkDict[0][0]
             self.is_deleted = tag.isDeleted
+            self.object_type = chunk.obj_type
 
             num_chunks = math.ceil(float(tag.num_bytes) / chunk.length)
 
             for chunk_id in range(int(num_chunks) + 1):
                 if chunk_id in self.chunkDict:
                     self.chunkDict[chunk_id][0][0].is_most_recent = True
+
+            #Set the object name
+            if not tag.isDeleted:
+                self.name = chunk.name
+            else:
+                names = [x[1].name for x in self.chunkDict[0]]
+                names.remove('unlinked')
+
+                if len(names) > 0:
+                    self.name = names[0]
+
 
     def writeVersion(self, versionNum=0, name=None):
         header, hChunk = self.versions[versionNum][0]
