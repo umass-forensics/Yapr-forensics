@@ -42,16 +42,24 @@ def main():
 
         for block in sorted_blocks:
             for (tag, chunk) in block.chunk_pairs:
-                filename = tag.object_cls.name
-
-                if filename is None or filename == '':
-                    filename = 'NONE'
-
-                #Figure out the extension from the filename
-                if filename != 'NONE':
-                    blah, ext = os.path.splitext(filename)
+                if tag.is_erased:
+                    filename = 'NA'
+                    ext = 'NA'
+                    is_deleted = 'NA'
+                    obj_type = 'NA'
                 else:
-                    ext = 'NONE'
+                    is_deleted = tag.object_cls.is_deleted
+                    obj_type = tag.object_cls.object_type
+                    filename = tag.object_cls.name
+
+                    if filename is None or filename == '':
+                        filename = 'NONE'
+
+                    #Figure out the extension from the filename
+                    if filename != 'NONE':
+                        blah, ext = os.path.splitext(filename)
+                    else:
+                        ext = 'NONE'
 
 
 
@@ -72,10 +80,10 @@ def main():
                 line = args.phone_name + "\t" \
                        + str(chunk.offset) + "\t" \
                        + str(tag.object_id) + "\t" \
-                       + str(tag.object_cls.object_type) + "\t" \
+                       + str(obj_type) + "\t" \
                        + str(filename) + "\t" \
                        + str(ext) + "\t" \
-                       + str(tag.object_cls.is_deleted) + "\t"\
+                       + str(is_deleted) + "\t"\
                        + str(tag.chunk_id) + "\t" \
                        + str(tag.block_seq) + "\t" \
                        + str(tag.isHeaderTag) + "\t" \
