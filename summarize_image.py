@@ -11,7 +11,7 @@ import summarize_deleted_blocks
 
 def main():
     parser = YaffsParser.get_argparser()
-    parser.add_argument("-logfile",
+    parser.add_argument("--logfile",
                         help="The output log file. Will write to image directory if no path is given.",
                         default=None,
                         dest="logfile")
@@ -26,7 +26,7 @@ def main():
             root, ext = os.path.splitext(args.imagefile)
             args.logfile = "%s_%s.txt" % (root, args.logfile)
 
-        sys.stderr.write('Log file: %s' % args.logfile)
+        sys.stderr.write('Log file: %s\n' % args.logfile)
 
         sys.stdout = open(args.logfile, 'w')
 
