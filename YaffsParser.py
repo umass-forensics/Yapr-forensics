@@ -285,8 +285,12 @@ def extract_objects(blocks):
             if tag.isHeaderTag:
                 chunk = YaffsChunk.YaffsHeader(chunk)
 
-                if chunk.is_erased or chunk.name == 'deleted':
+                if chunk.name == 'deleted':
                     tag.isDeleted = True
+
+                if chunk.is_erased:
+                    tag.is_erased = True
+
             elif tag.chunk_id == 0:
                 print 'Oob is not a header but it has a chunk id of zero.'
 
