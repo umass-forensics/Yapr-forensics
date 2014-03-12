@@ -9,20 +9,13 @@ import os
 import sys
 
 
-DEFAULT_PHONE_NAME = "No Name"
-
-
 def main():
     parser = YaffsParser.get_argparser()
-
-    parser.add_argument('--name',
-                        help="The pretty print of the name of the phone whose filesystem is to be parsed. Default: No-Name",
-                        type=str, default=DEFAULT_PHONE_NAME, dest="phone_name")
 
     args = parser.parse_args()
 
     root, ext = os.path.splitext(args.imagefile)
-    outfile = "%s_chunk_summary.tsv" % root
+    outfile = "%s_chunk_summary.csv" % root
 
     sys.stderr.write('Ouput file: %s\n' % outfile)
 
@@ -35,33 +28,51 @@ def main():
     #We have to make this call to fill out the object specific fields
     objects = YaffsParser.extract_objects(sorted_blocks)
 
-    col_names = "Phone\tOffset\tObjectID\tObjectType\tFilename\tFileExt\tIsObjectDeleted\tChunkID\tBlockSeqNum\tIsHeader\tIsExpired\tIsErased\tCategory\n"
+    col_names = "Phone," + \
+                "Offset," + \
+                "ObjectID," + \
+                "ObjectType," + \
+                "Filename," + \
+                "FileExt," + \
+                "IsObjectDeleted," + \
+                "ChunkID," + \
+                "BlockSeqNum," + \
+                "IsHeader," + \
+                "IsExpired," + \
+                "IsErased," + \
+                "Category\n"
 
     with open(outfile, 'w') as f:
         f.write(col_names)
 
         for block in sorted_blocks:
             for (tag, chunk) in block.chunk_pairs:
-                if tag.is_erased:
+                #Erased chunks won't be part of an object
+                if tag.is_erased or block.is_erased:
                     filename = 'NA'
                     ext = 'NA'
                     is_deleted = 'NA'
                     obj_type = 'NA'
+                #Check if the object is not a file
+                elif tag.object_cls.object_type != 1:
+                    filename = tag.object_cls.name if tag.object_cls.name != '' else '**NONE**'
+                    ext = 'NA'
+                    is_deleted = tag.object_cls.is_deleted
+                    obj_type = tag.object_cls.object_type
+                #Object must be a file
                 else:
                     is_deleted = tag.object_cls.is_deleted
                     obj_type = tag.object_cls.object_type
                     filename = tag.object_cls.name
 
                     if filename is None or filename == '':
-                        filename = 'NONE'
+                        filename = '**NONE**'
 
                     #Figure out the extension from the filename
-                    if filename != 'NONE':
-                        blah, ext = os.path.splitext(filename)
-                    else:
-                        ext = 'NONE'
 
+                    blah, ext = os.path.splitext(filename)
 
+                    ext = ext if ext != '' else '**NONE**'
 
                 if tag.is_erased:
                     category = "Erased"
@@ -77,18 +88,18 @@ def main():
                         else:
                             category = "Expired data"
 
-                line = args.phone_name + "\t" \
-                       + str(chunk.offset) + "\t" \
-                       + str(tag.object_id) + "\t" \
-                       + str(obj_type) + "\t" \
-                       + str(filename) + "\t" \
-                       + str(ext) + "\t" \
-                       + str(is_deleted) + "\t"\
-                       + str(tag.chunk_id) + "\t" \
-                       + str(tag.block_seq) + "\t" \
-                       + str(tag.isHeaderTag) + "\t" \
-                       + str(not tag.is_most_recent) + "\t" \
-                       + str(tag.is_erased) + "\t" \
+                line = args.phone_name + "," \
+                       + str(chunk.offset) + "," \
+                       + str(tag.object_id) + "," \
+                       + str(obj_type) + "," \
+                       + str(filename) + "," \
+                       + str(ext) + "," \
+                       + str(is_deleted) + ","\
+                       + str(tag.chunk_id) + "," \
+                       + str(tag.block_seq) + "," \
+                       + str(tag.isHeaderTag) + "," \
+                       + str(not tag.is_most_recent) + "," \
+                       + str(tag.is_erased) + "," \
                        + str(category) + "\n"
 
                 f.write(line)

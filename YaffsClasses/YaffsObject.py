@@ -154,8 +154,8 @@ class YaffsObject:
             if not tag.isDeleted:
                 self.name = chunk.name
             else:
-                names = [x[1].name for x in self.chunkDict[0]]
-                names.remove('unlinked')
+                names = [x[1].name for x in self.chunkDict[0]
+                         if x[1].name not in ['deleted', 'unlinked']]
 
                 if len(names) > 0:
                     self.name = names[0]
