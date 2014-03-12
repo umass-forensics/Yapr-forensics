@@ -18,6 +18,7 @@ DEFAULT_CHUNKSIZE = 2048
 DEFAULT_PAGES_PER_BLOCK = 64
 DEFAULT_OOB = 64
 DEFAULT_OOB_TAG_OFFSET = 30
+DEFAULT_PHONE_NAME = "UNSPECIFIED"
 
 
 def get_argparser():
@@ -40,6 +41,10 @@ def get_argparser():
 
     parser.add_argument('-t', help="The tag offset within the OOB. Default: %d" % DEFAULT_OOB_TAG_OFFSET,
                         type=int, default=DEFAULT_OOB_TAG_OFFSET, dest="tag_offset")
+
+    parser.add_argument('--name',
+                        help="The pretty print of the name of the phone whose filesystem is to be parsed. Default: No-Name",
+                        type=str, default=DEFAULT_PHONE_NAME, dest="phone_name")
 
     return parser
 
