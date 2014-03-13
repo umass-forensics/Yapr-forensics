@@ -7,6 +7,7 @@ __author__ = 'wallsr'
 import YaffsParser
 import os
 import sys
+import string
 
 
 def main():
@@ -55,7 +56,8 @@ def main():
                     obj_type = 'NA'
                 #Check if the object is not a file
                 elif tag.object_cls.object_type != 1:
-                    filename = tag.object_cls.name if tag.object_cls.name != '' else '**NONE**'
+                    filename = _strip_filename(tag.object_cls.name)
+
                     ext = 'NA'
                     is_deleted = tag.object_cls.is_deleted
                     obj_type = tag.object_cls.object_type
@@ -63,13 +65,9 @@ def main():
                 else:
                     is_deleted = tag.object_cls.is_deleted
                     obj_type = tag.object_cls.object_type
-                    filename = tag.object_cls.name
-
-                    if filename is None or filename == '':
-                        filename = '**NONE**'
+                    filename = _strip_filename(tag.object_cls.name)
 
                     #Figure out the extension from the filename
-
                     blah, ext = os.path.splitext(filename)
 
                     ext = ext if ext != '' else '**NONE**'
@@ -105,6 +103,19 @@ def main():
                 f.write(line)
 
     f.close()
+
+
+def _strip_filename(filename):
+    if filename is None or filename == '':
+        filename = '**NONE**'
+    #Check if we have non-printable chars
+    elif not all(c in string.printable for c in filename):
+        filename_stripped = ''.join([c for c in str(filename)
+                                     if c in string.printable])
+        if filename_stripped != filename:
+            filename = filename_stripped + "**STRIPPED**"
+
+    return filename
 
 
 if __name__ == '__main__':
