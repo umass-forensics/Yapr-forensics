@@ -7,7 +7,6 @@ __author__ = 'wallsr'
 import YaffsParser
 import os
 import sys
-import string
 
 
 def main():
@@ -106,12 +105,18 @@ def main():
 
 
 def _strip_filename(filename):
+    printable = '0123456789' \
+                + 'abcdefghijklmnopqrstuvwxyz' \
+                + 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' \
+                + '!"#$%&\'()*+-.:;<=>?@[]^_`{|}~'
+
+
     if filename is None or filename == '':
         filename = '**NONE**'
     #Check if we have non-printable chars
-    elif not all(c in string.printable for c in filename):
+    elif not all(c in printable for c in filename):
         filename_stripped = ''.join([c for c in str(filename)
-                                     if c in string.printable])
+                                     if c in printable])
         if filename_stripped != filename:
             filename = filename_stripped + "**STRIPPED**"
 
