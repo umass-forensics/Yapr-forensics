@@ -1,9 +1,12 @@
-from ypr import utilities
-
 __author__ = 'wallsr'
 
 import os
 import time
+
+from . import utilities
+
+
+_description = "extract file objects from the image"
 
 
 def extract_files(image, filenames, chunksize, oobsize, blocksize, oob_tag_offset, versions):
@@ -77,6 +80,7 @@ def main():
     DEFAULT_VERSIONS = [0]
 
     parser = utilities.get_argparser()
+    parser.description = _description
 
     parser.add_argument("--files",
                     help="The files to extract.",

@@ -1,4 +1,4 @@
-from ypr import utilities
+
 
 __author__ = 'wallsr'
 
@@ -7,8 +7,11 @@ import datetime
 import sys
 import time
 
-from ypr.YaffsClasses.YaffsChunk import YaffsHeader
-import summarize_deleted_blocks
+from . import utilities
+from .YaffsClasses.YaffsChunk import YaffsHeader
+
+
+_description = "high-level textual summary of image and objects"
 
 
 def main():
@@ -44,8 +47,6 @@ def main():
                                                        args.blocksize,
                                                        args.tag_offset)
 
-
-
     nonerased_blocks = [b for b in sorted_blocks if not b.is_erased]
 
     print '%d blocks' % len(sorted_blocks)
@@ -58,7 +59,7 @@ def main():
     print 'Found %d blocks with mismatched sequence numbers' \
           % len([block for block in sorted_blocks if block.possible_parse_error])
 
-    missing_seq_nums = summarize_deleted_blocks.get_missing_block_numbers(sorted_blocks)
+    missing_seq_nums = utilities.get_missing_block_numbers(sorted_blocks)
 
     objects = utilities.extract_objects(sorted_blocks)
 

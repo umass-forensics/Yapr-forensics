@@ -1,24 +1,23 @@
 __author__ = 'wallsr'
 
 """
-This simple script removes the OOB bytes from the image and writes
-the bytes to stdout.
+This simple script removes the OOB bytes from the image.
 
 """
 
-
 import os
-import sys
 from optparse import OptionParser
+
+
+_description = "strip the OOB bytes from the image"
+
 
 def main():
     """
     Assume we pass this scirpt the image file as an argument
     """
 
-    usage = 'usage: %prog [options] imagefile_1 .. imagefile_n'
-
-    parser = OptionParser(usage=usage)
+    parser = OptionParser(description=_description)
     parser.add_option('--chunksize', action='store', type='int',
                       dest='chunk_size', default=2048)
     parser.add_option('--oobsize', action='store', type='int',
