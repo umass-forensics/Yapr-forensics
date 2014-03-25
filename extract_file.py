@@ -1,9 +1,9 @@
+from ypr import utilities
+
 __author__ = 'wallsr'
 
 import os
 import time
-import YaffsParser
-from optparse import OptionParser
 
 
 def extract_files(image, filenames, chunksize, oobsize, blocksize, oob_tag_offset, versions):
@@ -11,9 +11,9 @@ def extract_files(image, filenames, chunksize, oobsize, blocksize, oob_tag_offse
     Extracts the most recent version of every file in the filenames
     list.
     """
-    blocks = YaffsParser.extract_ordered_blocks(image, chunksize, oobsize,
+    blocks = utilities.extract_ordered_blocks(image, chunksize, oobsize,
                                                 blocksize, oob_tag_offset)
-    objects = YaffsParser.extract_objects(blocks)
+    objects = utilities.extract_objects(blocks)
 
     destination = os.path.dirname(image)
 
@@ -76,7 +76,7 @@ def main():
     """
     DEFAULT_VERSIONS = [0]
 
-    parser = YaffsParser.get_argparser()
+    parser = utilities.get_argparser()
 
     parser.add_argument("--files",
                     help="The files to extract.",

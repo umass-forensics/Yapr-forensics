@@ -1,11 +1,12 @@
+from ypr import utilities
+
 __author__ = 'wallsr'
 
-import YaffsParser
 import sys
 
 
 def main():
-    parser = YaffsParser.get_argparser()
+    parser = utilities.get_argparser()
 
     parser.add_argument("--offsets",
                         nargs='*', dest="offsets")

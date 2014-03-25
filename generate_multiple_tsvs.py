@@ -1,7 +1,5 @@
 __author__ = 'Saksham'
 
-import YaffsParser
-import subprocess
 import os
 
 def main():

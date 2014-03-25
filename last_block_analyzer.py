@@ -1,14 +1,14 @@
+from ypr import utilities
 
 __author__ = 'svarma'
 
-import YaffsParser
 
 def main():
 
-    parser = YaffsParser.get_argparser();
+    parser = utilities.get_argparser();
     args = parser.parse_args();
 
-    sorted_blocks = YaffsParser.extract_ordered_blocks(args.imagefile,
+    sorted_blocks = utilities.extract_ordered_blocks(args.imagefile,
                                                        args.chunksize,
                                                        args.oobsize,
                                                        args.blocksize,

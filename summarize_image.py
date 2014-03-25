@@ -1,16 +1,18 @@
+from ypr import utilities
+
 __author__ = 'wallsr'
 
-from YaffsClasses.YaffsChunk import YaffsHeader
-import YaffsParser
 import os
 import datetime
 import sys
 import time
 
+from ypr.YaffsClasses.YaffsChunk import YaffsHeader
 import summarize_deleted_blocks
 
+
 def main():
-    parser = YaffsParser.get_argparser()
+    parser = utilities.get_argparser()
     parser.add_argument("--logfile",
                         help="The output log file. Will write to image directory if no path is given.",
                         default=None,
@@ -36,7 +38,7 @@ def main():
 
 
     #read in and order all of the blocks, by reverse order of sequence number
-    sorted_blocks = YaffsParser.extract_ordered_blocks(args.imagefile,
+    sorted_blocks = utilities.extract_ordered_blocks(args.imagefile,
                                                        args.chunksize,
                                                        args.oobsize,
                                                        args.blocksize,
@@ -58,7 +60,7 @@ def main():
 
     missing_seq_nums = summarize_deleted_blocks.get_missing_block_numbers(sorted_blocks)
 
-    objects = YaffsParser.extract_objects(sorted_blocks)
+    objects = utilities.extract_objects(sorted_blocks)
 
     print 'Found %d objects' % len(objects)
     print 'Found %d objects with a header.' % len([obj for obj in objects if 0 in obj.chunkDict])

@@ -1,19 +1,20 @@
+from ypr import utilities
+
 __author__ = 'Saksham'
 
-import YaffsParser
 
 def main():
 
-    parser = YaffsParser.get_argparser()
+    parser = utilities.get_argparser()
     args = parser.parse_args()
 
-    sorted_blocks = YaffsParser.extract_ordered_blocks(args.imagefile,
+    sorted_blocks = utilities.extract_ordered_blocks(args.imagefile,
                                                        args.chunksize,
                                                        args.oobsize,
                                                        args.blocksize,
                                                        args.tag_offset)
 
-    objects = YaffsParser.extract_objects(sorted_blocks)
+    objects = utilities.extract_objects(sorted_blocks)
     #current_objects = [o for o in objects if not o.is_deleted]
     tmp_objects = objects[0:100]
 

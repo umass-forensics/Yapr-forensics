@@ -1,20 +1,20 @@
 """
 This script prints the number of unique bytes by comparing different chunks.
 """
+from ypr import utilities
 
 __author__ = 'Saksham'
 
-import YaffsParser
 import os
 
 
 def main():
-    parser = YaffsParser.get_argparser()
+    parser = utilities.get_argparser()
     args = parser.parse_args()
 
     print args.imagefile
 
-    sorted_blocks = YaffsParser.extract_ordered_blocks(args.imagefile,
+    sorted_blocks = utilities.extract_ordered_blocks(args.imagefile,
                                                        args.chunksize,
                                                        args.oobsize,
                                                        args.blocksize,
@@ -22,7 +22,7 @@ def main():
 
     #We have to extract the objects to set the is_most_recent flag
     #for each of our chunks.
-    objects = YaffsParser.extract_objects(sorted_blocks)
+    objects = utilities.extract_objects(sorted_blocks)
 
     nonerased_blocks = [b for b in sorted_blocks if not b.is_erased]
     blocks = sorted(nonerased_blocks, key=lambda bl: bl.sequence_num)

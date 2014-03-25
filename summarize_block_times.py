@@ -1,3 +1,5 @@
+from ypr import utilities
+
 __author__ = 'wallsr'
 
 """
@@ -7,27 +9,23 @@ ctime values make sense based on the block sequence number ordering
 """
 
 import os
-import sys
 import time
-
-import YaffsParser
-from YaffsClasses.YaffsChunk import YaffsHeader
 
 
 def main():
-    parser = YaffsParser.get_argparser()
+    parser = utilities.get_argparser()
     args = parser.parse_args()
 
     print args.imagefile
 
     #read in and order all of the blocks, by reverse order of sequence number
-    sorted_blocks = YaffsParser.extract_ordered_blocks(args.imagefile,
+    sorted_blocks = utilities.extract_ordered_blocks(args.imagefile,
                                                        args.chunksize,
                                                        args.oobsize,
                                                        args.blocksize,
                                                        args.tag_offset)
 
-    objects = YaffsParser.extract_objects(sorted_blocks)
+    objects = utilities.extract_objects(sorted_blocks)
 
     #Let's grab all of the object headers for newly
     #created objects.

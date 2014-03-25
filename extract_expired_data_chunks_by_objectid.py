@@ -1,11 +1,12 @@
+from ypr import utilities
+
 __author__ = 'Saksham'
 
-import YaffsParser
 import os
 
 def main():
 
-    parser = YaffsParser.get_argparser()
+    parser = utilities.get_argparser()
 
     parser.add_argument("-obj_id",
                         help='The object ID of the file whose expired chunks are to be extracted',
@@ -13,13 +14,13 @@ def main():
 
     args = parser.parse_args()
 
-    sorted_blocks = YaffsParser.extract_ordered_blocks(args.imagefile,
+    sorted_blocks = utilities.extract_ordered_blocks(args.imagefile,
                                                        args.chunksize,
                                                        args.oobsize,
                                                        args.blocksize,
                                                        args.tag_offset)
 
-    objects = YaffsParser.extract_objects(sorted_blocks)
+    objects = utilities.extract_objects(sorted_blocks)
 
     chunk_offsets = []
     for obj in objects:

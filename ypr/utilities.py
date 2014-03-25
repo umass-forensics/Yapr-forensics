@@ -1,15 +1,11 @@
 # Scans the YAFFS2 image and rebuilds the filesystem.
 
 import argparse
-import summarize_deleted_blocks
-
 import datetime
 import os
 
+from .YaffsClasses import *
 
-from YaffsClasses import *
-
-import Scanner
 
 SCRIPT_NAME = "YaffsParser"
 VERSION = "0.0"
@@ -85,7 +81,7 @@ def main():
     print 'Found %d blocks with mismatched sequence numbers' \
           % len([block for block in sorted_blocks if block.possible_parse_error])
 
-    missing_seq_nums = summarize_deleted_blocks.get_missing_block_numbers(sorted_blocks)
+    missing_seq_nums = get_missing_block_numbers(sorted_blocks)
 
     objects = extract_objects(sorted_blocks)
 
@@ -175,6 +171,59 @@ def main():
 
     return
 
+
+def get_missing_block_numbers(sorted_blocks):
+    """
+    Returns a set of missing sequence numbers, if any exist.
+    Otherwise, returns None.
+    """
+    #Must have at least two blocks
+    if len(sorted_blocks) <= 1:
+        return
+
+    print "Excluding erased blocks, because they don't have valid sequence numbers"
+
+    blocks = [b for b in sorted_blocks if not b.is_erased]
+
+    seq_set = set([b.sequence_num for b in blocks])
+
+    print "Found %d unique sequence numbers" % len(seq_set)
+
+    #Let's check to make sure that no two blocks have the same sequence number.
+    if len(seq_set) < len(blocks):
+        print "Warning: Repeated sequence numbers.",
+        import collections
+        counter = collections.Counter([b.sequence_num for b in blocks])
+        print [(element, count) for element, count in counter.most_common() if count > 1]
+
+    #The blocks are sorted in reverse
+    last = blocks[0].sequence_num
+    first = blocks[-1].sequence_num
+
+    if last == 4294967295:
+        print "Sequence numbers might have rolled over. Weird! Stopping."
+        return
+
+    if len(blocks) == (last - first + 1):
+        print "None of the block sequence numbers are missing."
+        return set([])
+
+    missing_set = set(range(first, last + 1)) - seq_set
+    print "Missing %d sequence numbers." % len(missing_set)
+
+    holes = []
+
+    for x in range(1, len(blocks)):
+        #check if the blocks are not contiguous
+        if blocks[x].sequence_num != blocks[x-1].sequence_num-1:
+            hole_start = blocks[x].sequence_num + 1
+            hole_end = blocks[x-1].sequence_num - 1
+
+            holes.append((hole_start, hole_end))
+
+    print "Found %d holes." % len(holes)
+
+    return missing_set
 
 def testExtractSpecificFile(objects):
 

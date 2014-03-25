@@ -1,3 +1,5 @@
+from ypr import utilities
+
 __author__ = 'wallsr'
 
 
@@ -8,8 +10,8 @@ file by making some assumptions about the format of the oob.'
 The current numbers are hardcoded for the Via Forensics Droid Eris image.
 """
 
-import Scanner, YaffsParser
 import sys
+
 
 # I found this manually
 object_id = '\xb4\x02\x00\x00'
@@ -20,7 +22,7 @@ image = sys.argv[1]
 
 print image
 
-chunk_pairs = YaffsParser.extract_chunks(image, 2048, 64)
+chunk_pairs = utilities.extract_chunks(image, 2048, 64)
 
 f = open(image, 'rb')
 

@@ -1,16 +1,16 @@
 """
 This script writes important chunk level info. for all chunks to a tsv
 """
+from ypr import utilities
 
 __author__ = 'wallsr'
 
-import YaffsParser
 import os
 import sys
 
 
 def main():
-    parser = YaffsParser.get_argparser()
+    parser = utilities.get_argparser()
 
     args = parser.parse_args()
 
@@ -19,14 +19,14 @@ def main():
 
     sys.stderr.write('Ouput file: %s\n' % outfile)
 
-    sorted_blocks = YaffsParser.extract_ordered_blocks(args.imagefile,
+    sorted_blocks = utilities.extract_ordered_blocks(args.imagefile,
                                                        args.chunksize,
                                                        args.oobsize,
                                                        args.blocksize,
                                                        args.tag_offset)
 
     #We have to make this call to fill out the object specific fields
-    objects = YaffsParser.extract_objects(sorted_blocks)
+    objects = utilities.extract_objects(sorted_blocks)
 
     col_names = "Phone," + \
                 "Offset," + \

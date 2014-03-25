@@ -1,15 +1,15 @@
+from ypr import utilities
+from ypr.YaffsClasses import YaffsOobTag
+
 __author__ = 'wallsr'
 
 """
 Given an offset, returns the object id
 """
 
-from YaffsClasses.YaffsOobTag import YaffsOobTag
-import YaffsParser
-
 
 def main():
-    parser = YaffsParser.get_argparser()
+    parser = utilities.get_argparser()
 
     parser.add_argument("--offsets", help="Return object ids for these offsets",
                         nargs='*', type=int, dest="offsets")

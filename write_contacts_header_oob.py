@@ -1,3 +1,5 @@
+from ypr import ypr_scan, utilities
+
 __author__ = 'wallsr'
 
 """
@@ -8,9 +10,6 @@ in the image file.
 import sys
 
 from optparse import OptionParser
-import YaffsParser
-import Scanner
-
 
 
 def main():
@@ -35,10 +34,10 @@ def main():
 
     image = args[0]
 
-    headers = Scanner.get_anchor_headers(image, options.chunk_size,
+    headers = ypr_scan.get_anchor_headers(image, options.chunk_size,
                                          options.oob_size, 'contacts2.db')
 
-    oobs = YaffsParser.get_oob_bytes(image, headers, options.oob_size)
+    oobs = utilities.get_oob_bytes(image, headers, options.oob_size)
 
     for oob in oobs:
         sys.stdout.write(oob)

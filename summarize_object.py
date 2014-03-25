@@ -1,3 +1,5 @@
+from ypr import utilities
+
 __author__ = 'wallsr'
 
 """
@@ -5,11 +7,9 @@ The plan is to use this script to help solve the mysteries of object 258.
 
 """
 
-import YaffsParser
-
 
 def main():
-    parser = YaffsParser.get_argparser()
+    parser = utilities.get_argparser()
     parser.add_argument("--object_id", dest='object_id', type=int, default=-1)
     parser.add_argument("--object_name", dest='object_name', default='asd;lfjASDFeofijladksfjoe')
     parser.add_argument("-v", dest='verbose', action="store_true")
@@ -17,13 +17,13 @@ def main():
     args = parser.parse_args()
 
     #read in and order all of the blocks, by reverse order of sequence number
-    sorted_blocks = YaffsParser.extract_ordered_blocks(args.imagefile,
+    sorted_blocks = utilities.extract_ordered_blocks(args.imagefile,
                                                        args.chunksize,
                                                        args.oobsize,
                                                        args.blocksize,
                                                        args.tag_offset)
 
-    objects_all = YaffsParser.extract_objects(sorted_blocks)
+    objects_all = utilities.extract_objects(sorted_blocks)
 
 
     #objects = [o for o in objects_all if o.object_id == args.object_id]

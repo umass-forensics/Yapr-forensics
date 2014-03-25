@@ -1,13 +1,14 @@
+from ypr import utilities
+
 __author__ = 'wallsr'
 
-import YaffsParser
 import math
 import os
 import random
 
 
 def main():
-    parser = YaffsParser.get_argparser()
+    parser = utilities.get_argparser()
     parser.add_argument("--fraction",
                         help='The file size of the sampled file as a fraction of the original.',
                         type=float, default=0.01, dest="sample_fraction")
@@ -21,7 +22,7 @@ def main():
     num_blocks = math.ceil(total_num_blocks * args.sample_fraction)
     num_blocks = int(num_blocks)
 
-    blocks = YaffsParser.extract_ordered_blocks(args.imagefile,
+    blocks = utilities.extract_ordered_blocks(args.imagefile,
                                                 args.chunksize,
                                                 args.oobsize,
                                                 args.blocksize,

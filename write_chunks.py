@@ -3,19 +3,19 @@ Writes all of the chunks in the input image to separate files. Each chunk file u
 naming convention: offset_blockseq_objid_chunkid.dd
 
 """
+from ypr import utilities
 
 __author__ = 'wallsr'
 
-import YaffsParser
 import os
 import sys
 
 
 def main():
-    parser = YaffsParser.get_argparser()
+    parser = utilities.get_argparser()
     args = parser.parse_args()
 
-    sorted_blocks = YaffsParser.extract_ordered_blocks(args.imagefile,
+    sorted_blocks = utilities.extract_ordered_blocks(args.imagefile,
                                                        args.chunksize,
                                                        args.oobsize,
                                                        args.blocksize,

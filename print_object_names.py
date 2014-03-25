@@ -1,11 +1,12 @@
+from ypr import utilities
+
 __author__ = 'wallsr'
 
-import YaffsParser
 import os
 
 
 def main():
-    parser = YaffsParser.get_argparser()
+    parser = utilities.get_argparser()
     parser.add_argument("--write_to_file",
                         help='Write output to file in same directory as image.',
                         action='store_true', default=False, dest="write_to_file")
@@ -15,7 +16,7 @@ def main():
     if args.write_to_file:
         print args.imagefile
 
-    blocks = YaffsParser.extract_ordered_blocks(args.imagefile,
+    blocks = utilities.extract_ordered_blocks(args.imagefile,
                                                 args.chunksize,
                                                 args.oobsize,
                                                 args.blocksize,
@@ -23,7 +24,7 @@ def main():
 
 
 
-    objects = YaffsParser.extract_objects(blocks)
+    objects = utilities.extract_objects(blocks)
 
 
     tuple_set = set()

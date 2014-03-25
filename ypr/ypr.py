@@ -38,20 +38,19 @@ def warning(msg):
 
 
 def usage(commands):
-    ustr = 'usage: ypr <command> [<args>]' + os.linesep * 2
-    ustr += 'commands are:' + os.linesep
+    print 'usage: ypr <command> [<args>]'
+    print ''
+    print 'commands are:' + os.linesep
 
     for c in sorted(commands.keys()):
         if hasattr(commands[c], '_description'):
             desc = commands[c]._description
         else:
             desc = 'NO _description DEFINED FOR SUBCOMMAND'
-        ustr += '    %-10s: %s' % (c, desc) + os.linesep
-    #print('')
-    #print("hint: use any command and --help if lost")
-    #print("hint: try to run 'ypr list' to begin")
+        print '    %-10s: %s' % (c, desc)
+    print('')
+    print("hint: use any command and --help if lost")
 
-    return  ustr
 
 def __get_commands():
     """
@@ -76,7 +75,7 @@ def __get_commands():
         module = getattr(__import__('ypr.%s' % module_name), module_name)
         commands[name] = module
 
-        return commands
+    return commands
 
 
 def main():

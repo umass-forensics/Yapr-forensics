@@ -1,17 +1,20 @@
-__author__ = 'wallsr'
-
 """
 This script attempts to determine important characteristics of a Yaffs phone image.
 
 Ideally, this functionality will be incorporated into a new version of the Yaffs parser.
 """
 
+__author__ = 'wallsr'
+
+import argparse
 import os
 
-from YaffsClasses.YaffsChunk import YaffsHeader
-from YaffsClasses.YaffsOobTag import YaffsOobTag
+from . import utilities
+from .YaffsClasses.YaffsChunk import YaffsHeader
+from .YaffsClasses.YaffsOobTag import YaffsOobTag
 
-import YaffsParser
+
+_description = "attempts to determine important characteristics of the phone image"
 
 
 def scan_file(image, anchor, chunk_sizes, oob_sizes):
@@ -70,7 +73,7 @@ def scan_file(image, anchor, chunk_sizes, oob_sizes):
 
 
 def count_constant_oobs(image, chunks, oobsize):
-    oobs = YaffsParser.get_oob_bytes(image, chunks, oobsize)
+    oobs = utilities.get_oob_bytes(image, chunks, oobsize)
     constants_count = 0
     constant = '\xff' * oobsize
 
@@ -81,7 +84,7 @@ def count_constant_oobs(image, chunks, oobsize):
     return constants_count
 
 def guess_oob_offset(image, headers, oob_size):
-    oobs_bytes = YaffsParser.get_oob_bytes(image, headers, oob_size)
+    oobs_bytes = utilities.get_oob_bytes(image, headers, oob_size)
 
     best_parsed = []
 
@@ -114,10 +117,10 @@ def guess_oob_offset(image, headers, oob_size):
 
 
 def guess_block_size(image, chunk_size, oob_size, oob_offset):
-    chunk_pairs = YaffsParser.extract_chunks(image, chunk_size, oob_size)
+    chunk_pairs = utilities.extract_chunks(image, chunk_size, oob_size)
     chunks = [c for c, o in chunk_pairs[:1024]]
 
-    oobs_bytes = YaffsParser.get_oob_bytes(image, chunks, oob_size)
+    oobs_bytes = utilities.get_oob_bytes(image, chunks, oob_size)
 
     oobs = [YaffsOobTag(b, oob_offset) for b in oobs_bytes]
 
@@ -145,13 +148,8 @@ def guess_block_size(image, chunk_size, oob_size, oob_offset):
     return size
 
 
-
-
-
-
-
 def get_headers(image, chunk_size, oob_size):
-    chunk_pairs = YaffsParser.extract_chunks(image, chunk_size, oob_size)
+    chunk_pairs = utilities.extract_chunks(image, chunk_size, oob_size)
 
     #First filter, The first byte should be 0x01
     #Litte endian
@@ -180,10 +178,11 @@ def main():
     command line.
     """
     DEFAULT_ANCHORS = ['contacts2.db']
-    DEFAULT_CHUNK_SIZES = [1024, 2048, 4096]
-    DEFAULT_OOB_SIZES = [0, 32, 64, 128]
+    DEFAULT_CHUNK_SIZES = [2048]
+    DEFAULT_OOB_SIZES = [64]
 
-    parser = YaffsParser.get_argparser()
+    parser = argparse.ArgumentParser(description=_description)
+    parser.add_argument("imagefile", help="The path to the YAFFS2 image.", type=str)
     parser.add_argument("--anchors",
                         help="The filenames to use for anchoring the search. Default: %s" % DEFAULT_ANCHORS,
                         nargs='*', default=DEFAULT_ANCHORS, dest="anchors")
