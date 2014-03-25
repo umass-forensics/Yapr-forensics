@@ -26,7 +26,7 @@ def get_argparser():
     Assume we pass this scirpt the image file as an argument
     """
 
-    parser = argparse.ArgumentParser(description="Scans the YAFFS2 image and attempts to rebuild the filesystem.");
+    parser = argparse.ArgumentParser(description="Scans the YAFFS2 image and attempts to rebuild the filesystem.")
 
     parser.add_argument("imagefile", help="The path to the YAFFS2 image.", type=str)
 
