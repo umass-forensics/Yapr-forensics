@@ -1,14 +1,17 @@
-from ypr import utilities
-
 __author__ = 'wallsr'
 
 import math
 import os
 import random
 
+from . import utilities
+
+_description = "sample blocks from the yaffs image and write them to a new file"
+
 
 def main():
     parser = utilities.get_argparser()
+    parser.description = _description
     parser.add_argument("--fraction",
                         help='The file size of the sampled file as a fraction of the original.',
                         type=float, default=0.01, dest="sample_fraction")
@@ -23,10 +26,10 @@ def main():
     num_blocks = int(num_blocks)
 
     blocks = utilities.extract_ordered_blocks(args.imagefile,
-                                                args.chunksize,
-                                                args.oobsize,
-                                                args.blocksize,
-                                                args.tag_offset)
+                                              args.chunksize,
+                                              args.oobsize,
+                                              args.blocksize,
+                                              args.tag_offset)
 
     sampled_blocks = random.sample(blocks, num_blocks)
 
