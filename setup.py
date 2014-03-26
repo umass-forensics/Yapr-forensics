@@ -13,7 +13,7 @@ if sys.version_info[0] == 2 and sys.version_info[1] < 7:
     requires += ['argparse']
 
 setup(
-    name = 'ypr',
+    name = 'yapr',
     version = '0.1',
     packages = find_packages(),
     author = __author__,
@@ -22,7 +22,7 @@ setup(
     install_requires = requires,
     entry_points = {
         'console_scripts': [
-            'yapr = ypr.yapr:main'
+            'yapr = yapr.yapr:main'
         ],
     }
 )
