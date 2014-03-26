@@ -1,4 +1,4 @@
-from ypr import ypr_scan, utilities
+from ypr import yapr_scan, utilities
 
 __author__ = 'wallsr'
 
@@ -34,7 +34,7 @@ def main():
 
     image = args[0]
 
-    headers = ypr_scan.get_anchor_headers(image, options.chunk_size,
+    headers = yapr_scan.get_anchor_headers(image, options.chunk_size,
                                          options.oob_size, 'contacts2.db')
 
     oobs = utilities.get_oob_bytes(image, headers, options.oob_size)

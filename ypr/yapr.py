@@ -38,7 +38,7 @@ def warning(msg):
 
 
 def usage(commands):
-    print 'usage: ypr <command> [<args>]'
+    print 'usage: yapr <command> [<args>]'
     print ''
     print 'commands are:' + os.linesep
 
@@ -47,7 +47,7 @@ def usage(commands):
             desc = commands[c]._description
         else:
             desc = 'NO _description DEFINED FOR SUBCOMMAND'
-        print '    %-10s: %s' % (c, desc)
+        print '    %-15s: %s' % (c, desc)
     print('')
     print("hint: use any command and --help if lost")
 
@@ -57,7 +57,7 @@ def __get_commands():
     Returns a dictionary of command modules indexed by name.
 
     Commands should be in separate python scripts with the
-    filename ypr_COMMAND.py
+    filename yapr_COMMAND.py
     """
     commands = {}
 
@@ -65,14 +65,14 @@ def __get_commands():
     dirname = os.path.dirname(abspath)
 
     for filepath in os.listdir(dirname):
-        match = re.match(r'ypr_(.*)\.py', filepath)
+        match = re.match(r'yapr_(.*)\.py', filepath)
 
         if not match:
             continue
 
         name = match.group(1)
-        module_name = 'ypr_%s' % name
-        module = getattr(__import__('ypr.%s' % module_name), module_name)
+        module_name = 'yapr_%s' % name
+        module = getattr(__import__('yapr.%s' % module_name), module_name)
         commands[name] = module
 
     return commands

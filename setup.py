@@ -22,7 +22,7 @@ setup(
     install_requires = requires,
     entry_points = {
         'console_scripts': [
-            'ypr = ypr.ypr:main'
+            'yapr = ypr.yapr:main'
         ],
     }
 )
