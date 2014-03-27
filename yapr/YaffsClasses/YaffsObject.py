@@ -1,6 +1,6 @@
 import math
 
-from ypr.YaffsClasses import YaffsChunk
+from . import YaffsChunk
 
 
 class YaffsObject:

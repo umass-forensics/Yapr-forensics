@@ -7,7 +7,6 @@ The layout of this application (and some code snippets) is inspired by BTC:
 
 __author__ = 'wallsr'
 
-import argparse
 import atexit
 import os
 import re
