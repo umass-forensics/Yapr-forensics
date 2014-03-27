@@ -1,12 +1,12 @@
 """
 This script writes important chunk level info. for all chunks to a tsv
 """
-from ypr import utilities
 
 __author__ = 'wallsr'
 
 import os
 import sys
+from . import utilities
 
 
 def main():
