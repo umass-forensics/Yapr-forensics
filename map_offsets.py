@@ -22,7 +22,7 @@ def map_offset_to_original(offset, offset_map, filtersize=1024):
     return None
 
 
-def map_offset_to_block(offset, blocksize=64, pagesize=2048):
+def map_offset_to_block(offset, blocksize=64, pagesize=2112):
     """
     Blocksize is in pages, pagesize is in bytes.
 
@@ -64,6 +64,11 @@ def main():
     parser.add_argument('infile', nargs='?', type=argparse.FileType('r'), default=sys.stdin,
                         help="Defaults to stdin")
 
+    parser.add_argument("-p", "--pagesize",
+                        help="The NAND page size (e.g. 2048 bytes). Add spare if file contains oob.",
+                        type=int, default=2048)
+
+
     args = parser.parse_args()
     offset_map = read_map_csv(args.mapfile)
 
@@ -78,7 +83,7 @@ def main():
         if orig_offset is None:
             print 'Invalid Offset'
         else:
-            print 'Page %d, block %d' % map_offset_to_block(orig_offset)
+            print 'Page %d, block %d' % map_offset_to_block(orig_offset, pagesize=args.pagesize)
 
         line = args.infile.readline()
 
