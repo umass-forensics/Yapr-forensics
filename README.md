@@ -8,7 +8,9 @@ used commonly by older-model  Android phones.
 ```bash
 python setup.py install
 
-ypr --help
+yapr --help
 ```
+
+Test your installation by running `yapr tmp`.
 
 
