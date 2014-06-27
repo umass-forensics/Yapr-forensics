@@ -1,8 +1,0 @@
-This project is currently a prototype for parsing the YAFFS2 filesystem
-used commonly by Android mobile phones.
-
-# Installation
-
-    python setup.py install
-
-    ypr --help
