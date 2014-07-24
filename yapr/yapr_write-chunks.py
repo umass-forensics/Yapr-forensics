@@ -3,12 +3,17 @@ Writes all of the chunks in the input image to separate files. Each chunk file u
 naming convention: offset_blockseq_objid_chunkid.dd
 
 """
-from ypr import utilities
 
 __author__ = 'wallsr'
 
 import os
 import sys
+
+from . import utilities
+
+
+_description = """Writes all of the chunks in the input image to separate files. Each chunk file uses the
+naming convention: offset_blockseq_objid_chunkid.dd"""
 
 
 def main():
